@@ -18,6 +18,7 @@ module Data.Time.Relative
     -- * Conversions
     toSeconds,
     fromSeconds,
+    toString,
     fromString,
 
     -- * Formatting
@@ -402,6 +403,27 @@ fromString str =
   where
     read' = readTimeStr +++ readSeconds <* RPC.lift RP.skipSpaces
 {-# INLINEABLE fromString #-}
+
+-- | Formats to a "time string" or "0", if argument is zero.
+--
+-- >>> toString (MkRelativeTime 0 0 0 0)
+-- "0"
+--
+-- >>> toString (MkRelativeTime 4 0 2 0)
+-- "4d2m"
+--
+-- @since 0.1
+toString :: RelativeTime -> String
+toString (MkRelativeTime 0 0 0 0) = "0"
+toString (MkRelativeTime d h m s) =
+  f (d, 'd')
+    ++ f (h, 'h')
+    ++ f (m, 'm')
+    ++ f (s, 's')
+  where
+    f :: (Natural, Char) -> String
+    f (0, _) = ""
+    f (n, c) = show n ++ [c]
 
 -- | Formatting style.
 --

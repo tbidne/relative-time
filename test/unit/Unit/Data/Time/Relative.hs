@@ -38,7 +38,8 @@ specs =
     [ formatProseCompact,
       formatProseFull,
       formatDigitalCompact,
-      formatDigitalFull
+      formatDigitalFull,
+      testToString
     ]
 
 formatProseCompact :: TestTree
@@ -126,6 +127,15 @@ formatDigitalFull =
           verbosity = FormatVerbosityFull
         }
 
+testToString :: TestTree
+testToString = testCase "toString" $ do
+  "0" @=? Relative.toString (MkRelativeTime 0 0 0 0)
+  "1d" @=? Relative.toString (MkRelativeTime 1 0 0 0)
+  "2h" @=? Relative.toString (MkRelativeTime 0 2 0 0)
+  "3m" @=? Relative.toString (MkRelativeTime 0 0 3 0)
+  "4s" @=? Relative.toString (MkRelativeTime 0 0 0 4)
+  "4d3h2m1s" @=? Relative.toString (MkRelativeTime 4 3 2 1)
+
 mkFormatTests :: Format -> [String] -> [TestTree]
 mkFormatTests f = zipWith (testFormat f) formatResults
   where
@@ -155,7 +165,8 @@ props =
       testDiff,
       testReadShowId,
       testRead,
-      testFromString
+      testFromString,
+      testStringRoundTrip
     ]
 
 testToFromId :: TestTree
@@ -250,6 +261,20 @@ testFromString =
           H.annotate $ "Failed to parse str. Received: " <> err
           H.failure
         Right _ -> pure ()
+
+testStringRoundTrip :: TestTree
+testStringRoundTrip = TastyH.testPropertyNamed desc "testStringRoundTrip" $ do
+  H.property $ do
+    rt <- H.forAll grelativeTime
+    let str = Relative.toString rt
+
+    H.annotate str
+
+    case Relative.fromString str of
+      Left err -> H.annotate $ "Failed to parse str: " <> err
+      Right result -> rt === result
+  where
+    desc = "fromString . toString round trips"
 
 gnat :: Gen Natural
 gnat = HG.integral $ HR.exponential 0 1_000_000
