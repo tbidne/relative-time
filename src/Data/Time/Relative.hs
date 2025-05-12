@@ -55,13 +55,22 @@ import Numeric.Algebra
     MSemiSpace ((.*)),
     MSpace ((.%)),
     MetricSpace (diffR),
+    Normed (norm, sgn),
     Semimodule,
     SemivectorSpace,
   )
 import Numeric.Convert.Integer (FromInteger (fromZ), ToInteger (toZ))
 import Numeric.Convert.Rational (ToRational (toQ))
 import Numeric.Convert.Real (ToReal (toR))
-import Optics.Core (A_Lens, Iso', LabelOptic (labelOptic), Prism', iso, lens, prism)
+import Optics.Core
+  ( A_Lens,
+    Iso',
+    LabelOptic (labelOptic),
+    Prism',
+    iso,
+    lens,
+    prism,
+  )
 import Text.ParserCombinators.ReadP qualified as RP
 import Text.ParserCombinators.ReadPrec (ReadPrec, (+++))
 import Text.ParserCombinators.ReadPrec qualified as RPC
@@ -108,9 +117,6 @@ import Text.Read.Lex (Lexeme (Ident, Punc))
 --   parse the output of 'Show' i.e. the derived instance.
 -- * Optics: In addition to the obvious lenses, we also provide an
 --   'Optics.Core.Iso' between 'RelativeTime' and 'Natural' seconds.
---
--- >>> read @RelativeTime "MkRelativeTime {days = 1, hours = 2, minutes = 3, seconds = 4}"
--- MkRelativeTime {days = 1, hours = 2, minutes = 3, seconds = 4}
 --
 -- @since 0.1
 type RelativeTime :: Type
@@ -250,6 +256,16 @@ instance SemivectorSpace RelativeTime Natural
 -- | @since 0.1
 instance MetricSpace RelativeTime where
   diffR x y = toSeconds x `diffR` toSeconds y
+  {-# INLINEABLE diffR #-}
+
+-- | @since 0.1
+instance Normed RelativeTime where
+  norm = id
+  {-# INLINEABLE norm #-}
+  sgn x
+    | x == zero = zero
+    | otherwise = zero {seconds = 1}
+  {-# INLINEABLE sgn #-}
 
 -- | Isomorphism between 'Natural' seconds and 'RelativeTime'.
 --
@@ -405,6 +421,8 @@ fromString str =
 {-# INLINEABLE fromString #-}
 
 -- | Formats to a "time string" or "0", if argument is zero.
+--
+-- ==== __Examples__
 --
 -- >>> toString (MkRelativeTime 0 0 0 0)
 -- "0"
