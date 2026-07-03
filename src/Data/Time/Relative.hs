@@ -52,10 +52,14 @@ import GHC.Show qualified as GRead
 import Numeric.Algebra
   ( AMonoid (zero),
     ASemigroup ((.+.)),
+    Demimodule,
+    Hemimodule,
     MSemiSpace ((.*)),
     MSpace ((.%)),
     MetricSpace (diffR),
     Normed (norm, sgn),
+    PseudoSemivectorSpace,
+    Quartamodule,
     Semimodule,
     SemivectorSpace,
   )
@@ -248,7 +252,19 @@ instance MSpace RelativeTime Natural where
   {-# INLINEABLE (.%) #-}
 
 -- | @since 0.1
+instance Quartamodule RelativeTime Natural
+
+-- | @since 0.1
+instance Demimodule RelativeTime Natural
+
+-- | @since 0.1
+instance Hemimodule RelativeTime Natural
+
+-- | @since 0.1
 instance Semimodule RelativeTime Natural
+
+-- | @since 0.1
+instance PseudoSemivectorSpace RelativeTime Natural
 
 -- | @since 0.1
 instance SemivectorSpace RelativeTime Natural

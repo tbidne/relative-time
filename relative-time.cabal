@@ -58,7 +58,7 @@ library
   exposed-modules: Data.Time.Relative
   build-depends:
     , algebra-simple  ^>=0.1
-    , base            >=4.14.0.0 && <4.22
+    , base            >=4.14.0.0 && <4.23
     , bounds          ^>=0.1
     , deepseq         >=1.4.4.0  && <1.6
     , optics-core     ^>=0.4
@@ -73,7 +73,7 @@ test-suite unit
   build-depends:
     , algebra-simple
     , base
-    , hedgehog        >=1.0.2   && <1.6
+    , hedgehog        >=1.0.2   && <1.8
     , relative-time
     , tasty           >=1.1.0.3 && <1.6
     , tasty-hedgehog  >=1.2.0   && <1.5
